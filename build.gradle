@@ -15,23 +15,28 @@ repositories {
 
 dependencies {
     String javaFxVersion = '17.0.7'
+    String osName = System.getProperty('os.name').toLowerCase()
+    String macPlatform = System.getProperty('os.arch') in ['aarch64', 'arm64']
+            ? 'mac-aarch64' : 'mac'
+    def javafxPlatforms = [macPlatform, 'win', 'linux']
 
-    implementation("org.openjfx:javafx-base:${javaFxVersion}:win")
-    implementation("org.openjfx:javafx-base:${javaFxVersion}:mac")
-    implementation("org.openjfx:javafx-base:${javaFxVersion}:linux")
-    implementation("org.openjfx:javafx-controls:${javaFxVersion}:win")
-    implementation("org.openjfx:javafx-controls:${javaFxVersion}:mac")
-    implementation("org.openjfx:javafx-controls:${javaFxVersion}:linux")
-    implementation("org.openjfx:javafx-fxml:${javaFxVersion}:win")
-    implementation("org.openjfx:javafx-fxml:${javaFxVersion}:mac")
-    implementation("org.openjfx:javafx-fxml:${javaFxVersion}:linux")
-    implementation("org.openjfx:javafx-graphics:${javaFxVersion}:win")
-    implementation("org.openjfx:javafx-graphics:${javaFxVersion}:mac")
-    implementation("org.openjfx:javafx-graphics:${javaFxVersion}:linux")
+    if (osName.contains('win')) {
+        javafxPlatforms = ['win', 'mac', 'linux']
+    } else if (osName.contains('linux')) {
+        javafxPlatforms = ['linux', 'mac', 'win']
+    }
+
+    javafxPlatforms.each { platform ->
+        implementation("org.openjfx:javafx-base:${javaFxVersion}:${platform}")
+        implementation("org.openjfx:javafx-controls:${javaFxVersion}:${platform}")
+        implementation("org.openjfx:javafx-fxml:${javaFxVersion}:${platform}")
+        implementation("org.openjfx:javafx-graphics:${javaFxVersion}:${platform}")
+    }
 }
 
 application {
     mainClass.set("javafxtutorial.Launcher")
+    applicationDefaultJvmArgs = ["-Djavafx.cachedir=${projectDir}/.javafx-cache"]
 }
 
 java {
