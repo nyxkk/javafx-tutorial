@@ -20,6 +20,7 @@ public class Main extends Application {
     private TextField userInput;
     private Button sendButton;
     private Scene scene;
+    private final Duke duke = new Duke();
     private final Image userImage = new Image(
             this.getClass().getResourceAsStream("/images/DaUser.png"));
     private final Image dukeImage = new Image(
@@ -61,6 +62,24 @@ public class Main extends Application {
 
         DialogBox dialogBox = new DialogBox("Hello!", userImage);
         dialogContainer.getChildren().addAll(dialogBox);
+
+        sendButton.setOnMouseClicked(event -> handleUserInput());
+        userInput.setOnAction(event -> handleUserInput());
+        dialogContainer.heightProperty().addListener(
+                observable -> scrollPane.setVvalue(1.0));
         stage.show();
+    }
+
+    /**
+     * Creates user and Duke dialog boxes, appends them to the dialog container,
+     * and clears the user input after processing.
+     */
+    private void handleUserInput() {
+        String userText = userInput.getText();
+        String dukeText = duke.getResponse(userText);
+        dialogContainer.getChildren().addAll(
+                DialogBox.getUserDialog(userText, userImage),
+                DialogBox.getDukeDialog(dukeText, dukeImage));
+        userInput.clear();
     }
 }
